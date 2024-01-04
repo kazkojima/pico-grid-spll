@@ -2,6 +2,7 @@
 #define _SPLL_1ph_H_
 #define SPLL_Q _IQ21
 #define SPLL_Qmpy _IQ21mpy
+#define SPLL_Qint _IQ21int
 
 typedef struct{
   int32_t B2_notch;
