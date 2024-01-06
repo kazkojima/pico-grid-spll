@@ -25,6 +25,9 @@ SPLL_LPF_COEFF spll_lpf_coef1;
 // ADC
 #define CAPTURE_CHANNEL 0
 
+// AC input offset (uint16_t)ceil(1.96/3.3*4096)
+#define AC_INPUT_OFFSET 0x981
+
 // GPIO
 #define NPATH_PIN 16
 #define NPATH_MASK (0x1f << NPATH_PIN)
@@ -38,7 +41,7 @@ void spll_irq_handler()
 {
   uint16_t val = adc_fifo_get();
   critical_section_enter_blocking(&spll_critsec);
-  spll1.AC_input = (long)(val - 0x981) << 9; // to Q21
+  spll1.AC_input = (long)(val - AC_INPUT_OFFSET) << 9; // to Q21
   //gpio_put(TEST_PIN, (spll1.AC_input > 0 ? 1 : 0));
   SPLL_1ph_run_FUNC(&spll1);
   critical_section_exit(&spll_critsec);
