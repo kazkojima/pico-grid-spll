@@ -1,0 +1,3 @@
+[submodule "mspm0-sdk"]
+	path = mspm0-sdk
+	url = https://github.com/TexasInstruments/mspm0-sdk.git
