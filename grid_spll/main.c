@@ -124,7 +124,7 @@ void core1_main(void)
   int16_t n;
   int16_t n_old = -1;
   int32_t theta = -1;
-  int32_t npath_coeff = SPLL_Q((float)Npath);
+  int32_t npath_coeff = SPLL_Q((float)(Npath/(2*PI)));
   while (true) {
     critical_section_enter_blocking(&spll_critsec);
     theta = spll1.theta[0];

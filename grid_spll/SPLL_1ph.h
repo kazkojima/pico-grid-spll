@@ -93,7 +93,9 @@ void SPLL_1ph_run_FUNC(SPLL_1ph *spll_obj)
   // PI loop filter            //
   //---------------------------//
   spll_obj->ylf[0]=-SPLL_Qmpy(spll_obj->lpf_coeff.A1_lf,spll_obj->ylf[1])+SPLL_Qmpy(spll_obj->lpf_coeff.B0_lf,spll_obj->ynotch[0])+SPLL_Qmpy(spll_obj->lpf_coeff.B1_lf,spll_obj->ynotch[1]);
-  //update array for future use
+  // saturate ylf with range [-wn/2,wn/2] not to underrun when no signal given
+  spll_obj->ylf[0] = _IQsat(spll_obj->ylf[0], _IQdiv2(spll_obj->wn), -_IQdiv2(spll_obj->wn));
+  // update array for future use
   spll_obj->ynotch[2]=spll_obj->ynotch[1];
   spll_obj->ynotch[1]=spll_obj->ynotch[0];
   spll_obj->ylf[1]=spll_obj->ylf[0];
@@ -101,7 +103,7 @@ void SPLL_1ph_run_FUNC(SPLL_1ph *spll_obj)
   // VCO              //
   //------------------//
   spll_obj->wo=spll_obj->wn+spll_obj->ylf[0];
-  //integration process to compute sine and cosine
+  // integration process to compute sine and cosine
   spll_obj->sin[0]=spll_obj->sin[1]+SPLL_Qmpy((SPLL_Qmpy(spll_obj->delta_t,spll_obj->wo)),spll_obj->cos[1]);
   spll_obj->cos[0]=spll_obj->cos[1]-SPLL_Qmpy((SPLL_Qmpy(spll_obj->delta_t,spll_obj->wo)),spll_obj->sin[1]);
   if(spll_obj->sin[0]>SPLL_Q(0.99))
@@ -112,8 +114,8 @@ void SPLL_1ph_run_FUNC(SPLL_1ph *spll_obj)
     spll_obj->cos[0]=SPLL_Q(0.99);
   else if(spll_obj->cos[0]<SPLL_Q(-0.99))
     spll_obj->cos[0]=SPLL_Q(-0.99);
-  //compute theta value
-  spll_obj->theta[0]=spll_obj->theta[1]+SPLL_Qmpy(SPLL_Qmpy(spll_obj->wo,SPLL_Q(0.159154943)),spll_obj->delta_t);
+  // compute theta value
+  spll_obj->theta[0]=spll_obj->theta[1]+SPLL_Qmpy(spll_obj->wo,spll_obj->delta_t);
   if(spll_obj->sin[0]>SPLL_Q(0.0) && spll_obj->sin[1] <=SPLL_Q (0.0))
     spll_obj->theta[0]=SPLL_Q(0.0);
   spll_obj->theta[1]=spll_obj->theta[0];
